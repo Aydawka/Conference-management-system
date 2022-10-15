@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+{% block title %} Register {% endblock %}
+{% block content %}
+<div class="container">
+   <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+         <form action="/register" method="POST">
+            <div class="mb-1">
+               <label>firstname:</label>
+               <input type="text"
+                      class="form-control" name="name">
+            </div>
+            <div class="mb-1" style="margin-bottom: 10px!important;">
+               <label>lastname:</label>
+               <input type="text"
+                      class="form-control" name="lastname">
+            </div>
+            <div class="mb-1">
+               <label>Interests:</label>
+               <input type="text"
+                      class="form-control" name="interests">
+            </div>
+            <div class="mb-1">
+               <label >Phone number:</label>
+               <input type="tel"
+                      class="form-control" name="phone">
+            </div>
+            <div class="mb-1">
+               <label >Email:</label>
+               <input type="email"
+                      class="form-control" name="email">
+            </div>
+            <div class="mb-1">
+               <label>Country:</label>
+               <input type="text"
+
+                      class="form-control" name="country">
+            </div>
+            <div class="mb-1">
+               <label>City:</label>
+               <input type="text"
+                      class="form-control"
+                      name="city">
+            </div>
+            <div class="mb-1">
+               <label >Zip:</label>
+               <input type="text"
+                      class="form-control" name="zipcode">
+            </div>
+            <div class="mb-1">
+               <label>Password:</label>
+               <input type="password"
+                      class="form-control"
+                      name="password">
+            </div>
+            <div class="mb-1">
+               <button class="btn btn-primary">Register</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+{% endblock %}

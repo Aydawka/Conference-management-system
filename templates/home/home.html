@@ -1,0 +1,286 @@
+{% extends 'layout.html' %}
+{% block title %} Home {% endblock %}
+{% block content %}
+{% if session['isAdmin'] %}
+<h1> Welcome {{ session['name'] }}</h1>
+<div class="container" style="margin: 50px;
+   background-color: #c4dff3;">
+   <div class="row" style="padding: 20px;">
+      <div class="col-md-16 col-lg-12 col-xl-7 col-md-offset-3">
+         <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+               <a class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#nav-home" role="tab"
+                  aria-controls="nav-home" aria-selected="true">Add Reviewer</a>
+               <a class="nav-link" id="nav-viewreviewers-tab" data-bs-toggle="tab" href="#nav-viewreviewers" role="tab"
+                  aria-controls="nav-viewreviewers" aria-selected="false">View Reviewers</a>
+               <a class="nav-link" id="nav-viewauthors-tab" data-bs-toggle="tab" href="#nav-viewauthors" role="tab"
+                  aria-controls="nav-viewauthors" aria-selected="false">View Authors</a>
+               <a class="nav-link" id="nav-viewpapers-tab" data-bs-toggle="tab" href="#nav-viewpapers" role="tab"
+                  aria-controls="nav-viewpapers" aria-selected="false">View all reviewed papers</a>
+            </div>
+         </nav>
+         <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+               <form action="/rewievers" method="POST">
+                  <div class="mb-3">
+                     {% with messages = get_flashed_messages() %}
+                     {% if messages %}
+                         {% for message in messages %}
+                         <div class="container alert alert-warning alert-dismissible fade show" role="alert">
+                             <strong>{{message}}</strong> 
+                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                           </div>   
+ 
+                         {% endfor %}
+                     {% endif %}
+                 {% endwith %}
+                     <label class="form-label">First Name</label>
+                     <input type="form-text" class="form-control form-control-sm" name="firstname" id="firstname"
+                        aria-describedby="firstnameHelp">
+                  </div>
+                  <div class="mb-3">
+                     <label class="form-label">Lastname</label>
+                     <input type="form-text"  class="form-control form-control-sm" name="lastname" id="lastname"
+                        aria-describedby="lastnameHelp">
+                  </div>
+                  <div class="mb-3">
+                     <select class="form-select" aria-label="Default select example" name="interest_id">
+                        <option selected>select interest</option>
+                        {% for interest in interests %}
+                        <option value="{{ interest.interest_id }}">{{ interest.interest_name }}</option>
+                        {% endfor %}
+                     </select>
+                  </div>
+                  <div class="mb-3">
+                     <label class="form-label">Email address</label>
+                     <input type="text" class="form-control form-control-sm"  name="email"
+                        aria-describedby="emailHelp">
+                  </div>
+                  <div class="mb-3">
+                     <label for="exampleInputPassword1" class="form-label">Password</label>
+                     <input type="password"      class="form-control form-control-sm" id="exampleInputPassword1" name="password">
+                  </div>
+                  <div class="mb-3">
+                     <label for="exampleInputPassword2" class="form-label">Confirm password</label>
+                     <input type="password"      class="form-control form-control-sm" id="exampleInputPassword2" name="password2">
+                  </div>
+                  <button type="submit" class="btn btn-primary">Register</button>
+               </form>
+            </div>
+            <div class="tab-pane fade" id="nav-viewreviewers" role="tabpanel" aria-labelledby="nav-viewreviewers-tab">
+             
+               <table class="table">
+                  <thead>
+                     <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Firstname</th>
+                        <th scope="col">Lastname</th>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Delete</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {% for i in data %}
+                     <tr>
+                        <th scope="row">{{ i.reviewer_id }}</th>
+                        <td>{{ i.firstname }}</td>
+                        <td>{{ i.lastname }}</td>
+                        <td>
+                           <a href="/update_rewiever/{{i.reviewer_id}}" class="btn btn-primary" data-bs-toggle="modal"
+                              data-bs-target="#exampleModal{{i.reviewer_id}}">
+                           Edit
+                           </a>
+                        </td>
+                        <td>
+                           <a href="/delete_rewiever/{{i.reviewer_id}}" class="btn btn-danger btn-xs"
+                              onclick="return confirm('Are You Sure To Delete ?')">Delete</a>
+                        </td>
+                     </tr>
+                     <!-- modal  -->
+                     <div class="modal fade" id="exampleModal{{i.reviewer_id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                           <div class="modal-content">
+                              <div class="modal-header">
+                                 <h5 class="modal-title" id="exampleModalLabel">Update Reviewer</h5>
+                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                 <form action="{{ url_for('update_rewiever', id=i.reviewer_id) }}" method="POST">
+                                    <div class="mb-3">
+                                       <label  class="form-label">First Name</label>
+                                       <input type="form-text"  class="form-control form-control-sm" name="firstname"
+                                        aria-describedby="firstnameHelp" value="{{i.firstname}}">
+                                    </div>
+                                    <div class="mb-3">
+                                       <label class="form-label">Lastname</label>
+                                       <input type="form-text" class="form-control form-control-sm" name="lastname"
+                                         aria-describedby="lastnameHelp" value="{{i.lastname}}">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                       <label class="form-label">Email address</label>
+                                       <input type="email"      class="form-control form-control-sm" id="email" name="email"
+                                          aria-describedby="emailHelp" value="{{i.email}}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                       <label class="form-label">Password</label>
+                                       <input type="password"      class="form-control form-control-sm" id="password" name="password"
+                                          aria-describedby="emailHelp" value="">
+                                    </div>
+                                    <div class="modal-footer">
+                                       <button type="button" class="btn btn-secondary"
+                                          data-bs-dismiss="modal">Close</button>
+                                       <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                 </form>
+                              </div>
+                           </div> 
+                        </div>
+                     </div>
+                     <!-- modal end  -->
+                     {% endfor %}
+                  </tbody>
+               </table>
+            </div>
+            <div class="tab-pane fade" id="nav-modifyreviewers" role="tabpanel"
+               aria-labelledby="nav-modifyreviewers-tab">...3</div>
+            <div class="tab-pane fade" id="nav-viewauthors" role="tabpanel" aria-labelledby="nav-viewauthors-tab">
+               <table class="table">
+                  <thead>
+                     <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Firstname</th>
+                        <th scope="col">Lastname</th>
+                        <th scope="col">Email</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {% for i in authors %}
+                     <tr>
+                        <th scope="row">{{ i.author_id }}</th>
+                        <td>{{ i.firstname }}</td>
+                        <td>{{ i.lastname }}</td>
+                        <td>{{ i.email }}</td>
+                        <td>
+                           <form method="get" action="/direct_page">
+                              <button class="btn btn-light" type="submit">Make Reviewer</button>
+                           </form>
+                     </tr>
+                  </tbody>
+                  {% endfor %}
+               </table>
+            </div>
+            <div class="tab-pane fade" id="nav-viewpapers" role="tabpanel" aria-labelledby="nav-viewpapers-tab">
+               <table class="table">
+                  <thead>
+                     <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Author's fullname</th>
+                        <th scope="col">All Papers</th>
+        
+                        <th scope="col">Status of Paper</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {% for i in papers %}
+                     <tr>
+                        <th scope="row">{{ i.paper_id }}</th>
+                        <td>{{i.firstname}} {{i.lastname}}</td>
+                        <td>
+                           <!-- Button trigger modal -->
+                           <a type="button" class="btn btn-primary" data-bs-toggle="modal"
+                              data-bs-target="#staticBackdrop{{i.paper_id}}">
+                              View paper
+                           </a>
+                           <!-- Modal -->
+                           <div class="modal fade" id="staticBackdrop{{i.paper_id}}"
+                              data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                              aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                 <div class="modal-content">
+                                    <div class="modal-header">
+                                       <h5 class="modal-title" id="staticBackdropLabel"></h5>
+                                       <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                          aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                       <figure class="text-center">
+                                          <blockquote class="blockquote">
+                                            
+                                              <p><b>Author. </b>   {{i.firstname}} {{i.lastname}}</p>
+                                              <b>Title. </b>  <p>{{papers_result[i.paper_id].title}}</p>
+                                             </b>
+                                             <p><b>Abstract. </b>{{papers_result[i.paper_id].abstract}}</p>
+                                             <p><b>Keywords. </b>{{papers_result[i.paper_id].keywords}}</p>
+
+                                             <p><b> Body. </b>{{papers_result[i.paper_id].body}}</p>
+                                          </blockquote>
+                                          <figcaption class="blockquote-footer">
+                                          </figcaption>
+                                       </figure>
+                                    </div>
+                                    <div class="modal-footer">
+                                       <button type="button" class="btn btn-secondary"
+                                          data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </td>
+                        <!-- <td>{{ i.interest }}</td> -->
+                        <td>
+                           {% if i.evaluate == 'accept' %}
+                           <span class="text-success">Accepted</span>
+                           {% else %}
+                           <span class="text-danger">Rejected </span>
+                           {% endif %}
+                        </td>
+                     </tr>
+                  </tbody>
+                  {% endfor %}
+               </table>
+
+         {% else %}
+         <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+
+              <div class="carousel-item" data-bs-interval="2000">
+                <img src="https://wallpaperaccess.com/full/1393241.jpg" class="d-block w-100" alt="...">
+              </div>
+              <div class="carousel-item " data-bs-interval="10000">
+               <img src="../static/papi1.png" class="d-block w-60" alt="...">
+             </div>
+              <div class="carousel-item active">
+                <img src="../static/papi2.png" class="d-block w-40" alt="...">
+              </div>
+
+
+
+             <div class="carousel-item">
+               <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Teliris_VL_Modular.JPG/1200px-Teliris_VL_Modular.JPG" class="d-block w-100" alt="...">
+             </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+
+
+        
+       <div class="modal fade" id="info" data-bs-backdrop="static"
+       data-bs-keyboard="false" tabindex="-1" aria-labelledby="statusLabel"
+       aria-hidden="true">
+
+         {% endif %}
+      </div>
+   </div>
+</div>
+{% endblock %}
